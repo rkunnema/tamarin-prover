@@ -29445,7 +29445,7 @@ analyzing: examples/sapic/slow/PKCS11/pkcs11-templates.spthy
 analyzed: examples/sapic/slow/PKCS11/pkcs11-templates.spthy
 
   output:          examples/sapic/slow/PKCS11/pkcs11-templates.spthy.tmp
-  processing time: 325.584430886s
+  processing time: 326.741145516s
   dec_limits (all-traces): verified (1657 steps)
   trusted_as_ut_impossible (all-traces): verified (2 steps)
   untrusted_as_ut_impossible (all-traces): verified (2 steps)
@@ -29465,7 +29465,7 @@ summary of summaries:
 analyzed: examples/sapic/slow/PKCS11/pkcs11-templates.spthy
 
   output:          examples/sapic/slow/PKCS11/pkcs11-templates.spthy.tmp
-  processing time: 325.584430886s
+  processing time: 326.741145516s
   dec_limits (all-traces): verified (1657 steps)
   trusted_as_ut_impossible (all-traces): verified (2 steps)
   untrusted_as_ut_impossible (all-traces): verified (2 steps)
