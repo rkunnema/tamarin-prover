@@ -79,7 +79,7 @@ import           qualified Data.Label as L
 import           Theory.Text.Parser.Token (parseString)
 import           Data.Bifunctor (Bifunctor(bimap))
 import           Data.Bitraversable (Bitraversable(bitraverse))
-import           Control.Monad.Catch (MonadCatch)
+import           Control.Monad.Catch (MonadCatch, catch, Exception)
 import qualified Accountability as Acc
 import qualified Accountability.Generation as Acc
 import GHC.Records (HasField(getField))
@@ -87,6 +87,8 @@ import GHC.Records (HasField(getField))
 import           TheoryObject                        (diffThyOptions)
 import           Items.OptionItem                    (openChainsLimit,saturationLimit,lemmasToProve)
 import Data.Maybe (fromMaybe)
+import Sapic.Exceptions (prettySapicException, SapicException)
+import Sapic.Annotation (AnnotatedProcess)
 
 
 ------------------------------------------------------------------------------
@@ -308,19 +310,21 @@ lemmaSelector thyOpts lem
 
 data TheoryLoadError =
     ParserError ParseError
+  | TranslateError (SapicException AnnotatedProcess)
   | WarningError WfErrorReport
 
 instance Show TheoryLoadError
   where
     show (ParserError e) = show e
     show (WarningError e) = Pretty.render (prettyWfErrorReport e)
+    show (TranslateError e) = "Translation error:" ++ Pretty.render (prettySapicException e)
 
 -- FIXME: How can we avoid the MonadCatch here?
 loadTheory :: MonadCatch m => TheoryLoadOptions -> String -> FilePath -> ExceptT TheoryLoadError m (Either OpenTheory OpenDiffTheory)
 loadTheory thyOpts input inFile = do
     thy <- withExceptT ParserError $ liftEither $ unwrapError $ bimap parse parse thyParser
     let thy' = addParamsOptions thyOpts thy
-    withTheory translate thy'
+    withExceptT TranslateError (withTheory translate thy')
   where
     thyParser | isDiffMode = Right $ diffTheory $ Just inFile
               | otherwise  = Left  $ theory     $ Just inFile
@@ -341,6 +345,9 @@ loadTheory thyOpts input inFile = do
     unwrapError (Right (Right v)) = Right $ Right v
 
     withTheory     f t = bitraverse f return t
+
+    -- catchTranslateException a = do
+    --       catch a (TranslateError)
 
 closeTheory :: MonadError TheoryLoadError m => String -> TheoryLoadOptions -> SignatureWithMaude -> Either OpenTheory OpenDiffTheory -> m ((WfErrorReport, Either ClosedTheory ClosedDiffTheory))
 closeTheory version thyOpts sig srcThy = do
