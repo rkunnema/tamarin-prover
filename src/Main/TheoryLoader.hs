@@ -79,7 +79,7 @@ import           qualified Data.Label as L
 import           Theory.Text.Parser.Token (parseString)
 import           Data.Bifunctor (Bifunctor(bimap))
 import           Data.Bitraversable (Bitraversable(bitraverse))
-import           Control.Monad.Catch (MonadCatch, catch, Exception)
+import           Control.Monad.Catch (MonadCatch)
 import qualified Accountability as Acc
 import qualified Accountability.Generation as Acc
 import GHC.Records (HasField(getField))

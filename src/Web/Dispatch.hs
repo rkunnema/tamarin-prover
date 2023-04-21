@@ -52,7 +52,7 @@ import           Data.Time.LocalTime
 import           System.Directory
 import           System.FilePath
 import Control.Monad.Except (ExceptT, runExceptT)
-import Main.TheoryLoader (TheoryLoadError (ParserError, WarningError), TheoryLoadOptions, oMaudePath)
+import Main.TheoryLoader (TheoryLoadError (ParserError, TranslateError, WarningError), TheoryLoadOptions, oMaudePath)
 import Theory.Tools.Wellformedness
 import qualified Data.Label as L
 import Main.Console (renderDoc)
@@ -176,6 +176,9 @@ loadTheories thOpts readyMsg thDir thLoad thClose autoProver = do
 
       case result of
         Left (ParserError e) -> do
+          putStrLn $ renderDoc $ reportFailure e path
+          return Nothing
+        Left (TranslateError e) -> do
           putStrLn $ renderDoc $ reportFailure e path
           return Nothing
         Left (WarningError report) -> do
