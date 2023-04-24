@@ -101,7 +101,7 @@ instance (Show p) => Show (SapicException p) where
                               ++ "."
 
 prettySapicException :: (Show an, HighlightDocument d, GoodAnnotation an) => SapicException (LProcess an) -> d
-prettySapicException (ProcessNotWellformed e p) = text (show e) <-> maybe emptyDoc ppP p 
+prettySapicException (ProcessNotWellformed e p) = text (show e) $-$ nest 2 (maybe emptyDoc ppP p)
     where ppP = prettyProcess . toProcess
 prettySapicException o = text (show o) 
         

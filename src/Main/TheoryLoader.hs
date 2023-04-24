@@ -79,7 +79,7 @@ import           qualified Data.Label as L
 import           Theory.Text.Parser.Token (parseString)
 import           Data.Bifunctor (Bifunctor(bimap))
 import           Data.Bitraversable (Bitraversable(bitraverse))
-import           Control.Monad.Catch (MonadCatch)
+import           Control.Monad.Catch (MonadCatch (catch))
 import qualified Accountability as Acc
 import qualified Accountability.Generation as Acc
 import GHC.Records (HasField(getField))
@@ -317,7 +317,7 @@ instance Show TheoryLoadError
   where
     show (ParserError e) = show e
     show (WarningError e) = Pretty.render (prettyWfErrorReport e)
-    show (TranslateError e) = "Translation error:" ++ Pretty.render (prettySapicException e)
+    show (TranslateError e) = "Translation error: " ++ Pretty.render (prettySapicException e)
 
 -- FIXME: How can we avoid the MonadCatch here?
 loadTheory :: MonadCatch m => TheoryLoadOptions -> String -> FilePath -> ExceptT TheoryLoadError m (Either OpenTheory OpenDiffTheory)
@@ -331,10 +331,10 @@ loadTheory thyOpts input inFile = do
 
     parse p = parseString (toParserFlags thyOpts) inFile p input
 
-    translate | isMSRModule   = Sapic.typeTheory
-                              >=> Sapic.translate
-                              >=> Acc.translate
-              | otherwise     = return
+    translate | isMSRModule = catchException . (Sapic.typeTheory
+                                           >=> Sapic.translate
+                                           >=> Acc.translate)
+              | otherwise   = return
 
     isDiffMode   = L.get oDiffMode thyOpts
     isMSRModule  = L.get oOutputModule thyOpts == Just ModuleMsr
@@ -343,6 +343,9 @@ loadTheory thyOpts input inFile = do
     unwrapError (Left (Right v)) = Right $ Left v
     unwrapError (Right (Left e)) = Left e
     unwrapError (Right (Right v)) = Right $ Right v
+
+    catchException c = c `catch` (except . Left) >>= (except . Right)
+    except m = ExceptT (return m)
 
     withTheory     f t = bitraverse f return t
 
