@@ -57,11 +57,11 @@ annotateEachClosestUnlock t v (ProcessComb c a' pl pr ) = do pl' <- annotateEach
                                                              pr' <- annotateEachClosestUnlock t v pr
                                                              return $ ProcessComb c a' pl' pr'
 
-annotateEachClosestUnlock' :: (Eq v1, MonadThrow m, MonadCatch m, Typeable v1, Typeable v2, Show v2, Show v1) =>
-                             SapicNTerm v1
+annotateEachClosestUnlock' :: (MonadCatch m, Typeable v2) =>
+                             SapicNTerm SapicLVar
                              -> AnVar v2
-                             -> Process (ProcessAnnotation v2) v1
-                             -> m (Process (ProcessAnnotation v2) v1)
+                             -> Process (ProcessAnnotation v2) SapicLVar
+                             -> m (Process (ProcessAnnotation v2) SapicLVar)
 annotateEachClosestUnlock' t v p = 
         Catch.catch (annotateEachClosestUnlock t v p)
         (\(LocalException tag) 

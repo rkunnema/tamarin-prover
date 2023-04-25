@@ -180,7 +180,6 @@ run thisMode as
         isParseOnlyMode = get oParseOnlyMode thyLoadOptions
 
         handleError e@(ParserError _) = die $ show e
-        handleError e@(TranslateError _) = die $ show e
         handleError (WarningError report) = do
           putStrLn $ renderDoc $ Pretty.vcat [ Pretty.text ""
                                              , Pretty.text "WARNING: the following wellformedness checks failed!"
