@@ -90,8 +90,9 @@ translate th =
     checkOps l x
       | l ops = x
       | otherwise = return
-    checkOps' l x
-      | l ops = x
+    -- evaluate lens on options, if true, behave like f, otherwise, do nothing
+    checkOps' l f
+      | l ops = f
       | otherwise = id
     sigRules =  stRules th._thySignature._sigMaudeInfo
     trans anP = checkOps' (._transProgress) (PT.progressTrans anP)

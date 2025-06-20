@@ -1,4 +1,5 @@
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -Wno-orphans #-}
 -- Copyright   : (c) 2019 Robert Künnemann
 -- License     : GPL v3 (see LICENSE)
 --
@@ -88,7 +89,7 @@ getProcessNames :: GoodAnnotation ann => ann -> [String]
 getProcessNames = processnames . getProcessParsedAnnotation
 
 setProcessNames :: GoodAnnotation a => [String] -> a -> a
-setProcessNames pn = mappendProcessParsedAnnotation (mempty {processnames = pn})
+setProcessNames pn = setProcessParsedAnnotation (mempty {processnames = pn})
 
 instance (Apply s SapicTerm) => (Apply s (ProcessAnnotation v)) where
     apply = applyAnn
@@ -135,7 +136,7 @@ toAnProcess :: GoodAnnotation an => PlainProcess -> LProcess an
 toAnProcess = unAnProcess . fmap f . AnProcess
   where
         -- f :: ProcessParsedAnnotation -> an
-        f l = setProcessParsedAnnotation l defaultAnnotation
+        f l = mappendProcessParsedAnnotation l defaultAnnotation
 
 toProcess :: GoodAnnotation an => LProcess an -> PlainProcess
 toProcess = unAnProcess . fmap f . AnProcess
