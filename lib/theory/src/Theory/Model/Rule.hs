@@ -1187,6 +1187,7 @@ prettyDotProtoRuleName attrs rn = text $ case rn of
 prettyRuleName :: (HighlightDocument d, HasRuleName (Rule i)) => Rule i -> d
 prettyRuleName = ruleInfo prettyProtoRuleName prettyIntrRuleACInfo . ruleName
 
+-- | Pretty print the attributes of a rule. Omits values that are `Nothing :: Maybe a` or `False` by default.
 prettyRuleAttribute :: (HighlightDocument d) => RuleAttributes -> d
 prettyRuleAttribute attr = fsep $ punctuate comma $ catMaybes [ -- Maybe types are only printed if they are (Just x). Hence fmap.
     fmap (\c -> text "color=" <> text (rgbToHex c)) (ruleColor attr),
