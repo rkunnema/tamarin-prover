@@ -69,7 +69,6 @@ ruleAttribute = asum
     [ symbol "colour=" *> parseColor
     , symbol "color="  *> parseColor
     , symbol "process="  *> parseAndIgnore
-    , symbol "derivchecks" *> ignore
     , symbol "no_derivcheck" *> ignore
     , symbol "role=" *> parseRole
     , symbol "issapicrule" *> return (mempty { isSAPiCRule = True })
@@ -81,8 +80,7 @@ ruleAttribute = asum
             Nothing -> fail $ "Color code " ++ show hc ++ " could not be parsed to RGB"
             Just rgb  -> return $ mempty { ruleColor = Just rgb }
     parseAndIgnore = do
-                        _ <-  symbol "\""
-                        _ <- manyTill anyChar (try (symbol "\""))
+                        _ <- try (singleQuoted anyChar) <|> try (doubleQuoted anyChar)
                         return  mempty
     ignore = return mempty
     parseRole = do
