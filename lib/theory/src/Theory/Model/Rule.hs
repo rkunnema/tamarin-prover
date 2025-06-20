@@ -1191,7 +1191,7 @@ prettyRuleAttribute :: (HighlightDocument d) => RuleAttributes -> d
 prettyRuleAttribute a = fsep $ punctuate comma $ catMaybes [ -- Maybe types are only printed if they are (Just x). Hence fmap.
     fmap (\c -> text "color=" <> text (rgbToHex c)) (ruleColor a),
     fmap ppProcess (ruleProcess a),
-    boolToMaybe (ignoreDerivChecks a) $ text "derivchecks",
+    boolToMaybe (ignoreDerivChecks a) $ text "no_derivcheck",
     boolToMaybe (isSAPiCRule a) $ text "issapicrule",
     fmap (\roleName -> text "role=\'" <> text roleName <> text "\'") (role a)
     ]
