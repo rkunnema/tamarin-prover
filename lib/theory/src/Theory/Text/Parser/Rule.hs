@@ -69,7 +69,7 @@ ruleAttribute = asum
     [ symbol "colour=" *> parseColor
     , symbol "color="  *> parseColor
     , symbol "process="  *> parseAndIgnore
-    , symbol "no_derivcheck" *> ignore
+    , symbol "no_derivcheck" *> return (mempty { ignoreDerivChecks = True })
     , symbol "role=" *> parseRole
     , symbol "issapicrule" *> return (mempty { isSAPiCRule = True })
     ]
@@ -82,7 +82,6 @@ ruleAttribute = asum
     parseAndIgnore = do
                         _ <- try (singleQuoted anyChar) <|> try (doubleQuoted anyChar)
                         return  mempty
-    ignore = return mempty
     parseRole = do
         _ <- symbol "\'" <|> symbol "\""
         role <- manyTill anyChar (try (symbol "\'" <|> symbol "\""))
