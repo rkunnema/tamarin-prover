@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Move brackets to avoid $" #-}
 -- |
 -- Copyright   : (c) 2010-2012 Simon Meier, Benedikt Schmidt
 --               contributing in 2019: Robert Künnemann, Johannes Wocker
@@ -80,7 +82,8 @@ ruleAttribute = asum
             Nothing -> fail $ "Color code " ++ show hc ++ " could not be parsed to RGB"
             Just rgb  -> return $ mempty { ruleColor = Just rgb }
     parseAndIgnore = do
-                        _ <- try (singleQuoted anyChar) <|> try (doubleQuoted anyChar)
+                        _ <- try (symbol "\'") <|> symbol "\""
+                        _ <- manyTill anyChar (try (symbol "\"") <|> (try $ symbol "'"))
                         return  mempty
     parseRole = do
         _ <- symbol "\'" <|> symbol "\""
